@@ -1,0 +1,83 @@
+# Web Component Extension Guide
+
+## Project Structure
+```
+├── src/
+│   ├── utils/                    # Shared utility functions
+│   │   ├── classwatcher.js      # DOM class change observer
+│   │   ├── common.js            # Common helper functions
+│   │   ├── cookies.js           # Cookie management
+│   │   ├── customElement.js     # Web component setup
+│   │   ├── dom.js               # DOM manipulation
+│   │   ├── store.js             # State management
+│   │   └── targeting.js         # Component targeting logic
+│   └── variants/                # Component variants
+│       └── variant_1/           # Example variant
+│           ├── controllers/     # Svelte components
+│           ├── App.svelte       # Main component
+│           ├── config.js        # Variant configuration
+│           ├── global.css       # Global styles
+│           ├── main.js          # Entry point
+│           └── webcomponent.js  # Web component registration
+├── rollup.config.js             # Build configuration
+├── rollup.script.js             # Build utilities
+├── package.json                 # Dependencies
+└── tampermonkey.config          # Development testing
+```
+
+## Project Overview
+This is a Svelte-based web component system supporting multiple variants with a Rollup build pipeline.
+
+## Core Concepts
+1. Component Registration: Components are registered via `customElements.define()` with a configuration-driven approach
+2. Variants: Each variant lives in `src/variants/{variant_name}` with its own bundle
+3. State Management: Uses Svelte stores with global state sync
+4. Shadow DOM: Components are isolated using Shadow DOM with styles/scripts injection
+
+## Adding New Features
+
+### New Component
+```javascript
+// 1. Add component config in src/variants/{variant}/config.js
+export let config = {
+    components: {
+        "new-component": {
+            initialised: false,
+            where: "beforebegin",
+            view: "newview",
+            target: () => document.querySelector(".target"),
+            condition: () => true
+        }
+    }
+}
+
+// 2. Create Svelte component
+// src/variants/{variant}/controllers/NewController.svelte
+<script>
+    export let name = "";
+</script>
+<div class="controller">{name}</div>
+
+// 3. Update App.svelte to include new view
+{#if view==="newview"}
+    <NewController name="{view}"/>
+{/if}
+```
+
+### New Functionality
+1. Utilities: Add to `src/utils/`
+2. Stores: Extend `src/utils/store.js`
+3. DOM Helpers: Extend `src/utils/dom.js`
+4. Configuration: Update `src/variants/{variant}/config.js`
+
+### Build Process
+1. Development: `npm run dev`
+2. Production: `npm run build`
+3. Local testing: Enable via TamperMonkey script
+
+### Best Practices
+1. Always use Shadow DOM for component isolation
+2. Follow the existing state management pattern
+3. Keep variant-specific code in variant directories
+4. Use the targeting system for component insertion
+5. Leverage the ClassWatcher for DOM updates
