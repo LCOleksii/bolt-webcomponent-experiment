@@ -12,8 +12,8 @@
 │   │   ├── store.js             # State management
 │   │   └── targeting.js         # Component targeting logic
 │   └── variants/                # Component variants
-│       └── variant_1/           # Example variant
-│           ├── controllers/     # Svelte components
+│       └── variant_1/           # Experiment variation root folder
+│           ├── controllers/     # Svelte components should be created in this folder
 │           ├── App.svelte       # Main component
 │           ├── config.js        # Variant configuration
 │           ├── global.css       # Global styles
@@ -27,6 +27,33 @@
 
 ## Project Overview
 This is a Svelte-based web component system supporting multiple variants with a Rollup build pipeline.
+The project has two main sections:
+
+### Core Utilities (src/utils/):
+classwatcher.js: Monitors DOM element class changes
+common.js: Generic helper functions
+cookies.js: Cookie operations
+customElement.js: Custom web component implementation
+dom.js: DOM manipulation utilities
+store.js: State management system
+targeting.js: Component insertion logic
+
+
+#### Variants System (src/variants/):
+Each variant folder (e.g., variant_1/) contains:
+controllers/: Svelte component implementations
+App.svelte: Root component that manages views
+config.js: Component configuration and targeting rules
+global.css: Variant-specific global styles
+main.js: Variant entry point
+webcomponent.js: Web component registration and setup
+
+### Supporting files:
+rollup.config.js: Build system settings
+rollup.script.js: Build helper functions
+package.json: Project dependencies
+tampermonkey.config: Development environment setup
+
 
 ## Core Concepts
 1. Component Registration: Components are registered via `customElements.define()` with a configuration-driven approach
@@ -38,7 +65,7 @@ This is a Svelte-based web component system supporting multiple variants with a 
 
 ### New Component
 ```javascript
-// 1. Add component config in src/variants/{variant}/config.js
+// 1. Add component config in src/variants/{variant_name}/config.js
 export let config = {
     components: {
         "new-component": {
@@ -52,7 +79,8 @@ export let config = {
 }
 
 // 2. Create Svelte component
-// src/variants/{variant}/controllers/NewController.svelte
+// populate functionality
+// src/variants/{variant_name}/controllers/NewController.svelte
 <script>
     export let name = "";
 </script>
@@ -68,7 +96,7 @@ export let config = {
 1. Utilities: Add to `src/utils/`
 2. Stores: Extend `src/utils/store.js`
 3. DOM Helpers: Extend `src/utils/dom.js`
-4. Configuration: Update `src/variants/{variant}/config.js`
+4. Configuration: Update `src/variants/{variant_name}/config.js`
 
 ### Build Process
 1. Development: `npm run dev`
