@@ -1,4 +1,3 @@
-/*<DO_NOT_MODIFY>*/
 import App from './App.svelte';
 import {GLOBAL} from './config';
 import {setRootElement} from '../../utils/dom';
@@ -63,4 +62,3 @@ function initialiseApp(cmpId) {
 }
 
 export default null;
-/*</DO_NOT_MODIFY>*/

@@ -1,4 +1,3 @@
-<!-- <MOD id="App"> the application root element -->
 <script>
     import ExampleController from "./controllers/ExampleController.svelte";
     export let id;
@@ -22,4 +21,3 @@
         border: green;
     }
 </style>
-<!--</MOD> -->

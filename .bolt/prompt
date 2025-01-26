@@ -1,4 +1,4 @@
-# Web Component System Framework
+# Web Component Experiment Variants Framework
 
 ## Project Architecture
 ```tree
@@ -10,12 +10,20 @@ ${cwd}/
     │   ├── customElement.js   # Web component base class
     │   └── [other utilities...]
     └── variants/
+        └── template/          # Template of a variant
+            ├── controllers/   # Svelte logic controllers
+            ├── components/    # Presentational components
+            ├── App.svelte     # Root component
+            ├── config.js      # Variant configuration
+            ├── global.css     # Styles that affect parent Document
+            └── main.js        # App initialiser, bootstraps svelte app in Webcomponent Shadow DOM
         └── {variant_name}/    # Component variation
             ├── controllers/   # Svelte logic controllers
             ├── components/    # Presentational components
             ├── App.svelte     # Root component
             ├── config.js      # Variant configuration
-            └── [other files...]
+            ├── global.css     # Styles that affect parent Document
+            └── main.js        # App initialiser, bootstraps svelte app in Webcomponent Shadow DOM
 ```
 
 ## System Constraints
@@ -39,66 +47,7 @@ ${cwd}/
 ### Core Implementation Flow
 0. **Template copy**:
 - Create new empty variant folder {variant_name}
-- Copy [variant_template] contents to {variant_name}
-
-1. **Configuration**:
-```javascript
-// src/variants/{variant_name}/config.js
-export const config = {
-  components: {
-    "component-id": {
-      view: "view-name",
-      target: () => document.querySelector(".selector"),
-      condition: () => true
-    }
-  }
-}
-```
-
-2. **Component Creation**:
-- `.svelte` files in `components/` for UI
-- Controllers in `controllers/` for business logic
-
-3. **View Integration**:
-```svelte
-<!-- App.svelte -->
-{#if view === 'new-view'}
-  <NewController {props}/>
-{/if}
-```
-
-## Build & Deployment
-<build_instructions>
-1. Development: `npm run dev`
-2. Production: `npm run build`
-3. Testing: Use Tampermonkey config
-4. Always rebuild after config changes
-</build_instructions>
-
-## Modification Standards
-<code_modification_rules>
-1. Use <MOD id="unique-id"> wrappers for changes
-2. Preserve existing file structure
-3. Follow Svelte component conventions
-4. Update config.js before implementation
-5. Verify Shadow DOM compatibility
-</code_modification_rules>
-
-## Critical Implementation Rules
-1. **Component Isolation**:
-   - Mandatory Shadow DOM usage
-   - No global style leakage
-   - Component-specific stores
-
-2. **Structure Compliance**:
-   - Controllers → Business logic
-   - Components → Pure presentation
-   - Utilities → Shared functions
-
-3. **State Management**:
-   - Use store.js for cross-component state
-   - Isolate variant-specific state
-   - Implement state versioning
+- Copy `src/variants/template/` files to {variant_name}
 
 ## Example Artifact Flow
 <boltArtifact id="new-variant" title="New Component Variant">
@@ -128,6 +77,4 @@ export const config = {
 ```
 
 **Important**: :
-1. Modify and bring updates to file section <MOD></MOD>
-2. Never modify file sections  <DO_NOT_MODIFY></DO_NOT_MODIFY>
-3. Treat each variant root folder (e.g src/variants/new_variant) as separate application, always work on one variant modification at a time.
+1. Treat each variant root folder (e.g src/variants/new_variant) as separate application, always work on one variant modification at a time.
