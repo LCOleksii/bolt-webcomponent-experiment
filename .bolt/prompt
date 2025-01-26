@@ -1,124 +1,158 @@
-# Web Component Extension Guide
+```markdown
+# Web Component System Framework
 
-## Project Structure of ~/project
-```
-├── src/
-│   ├── utils/                    # Shared utility functions
-│   │   ├── classwatcher.js      # DOM class change observer
-│   │   ├── common.js            # Common helper functions
-│   │   ├── cookies.js           # Cookie management
-│   │   ├── customElement.js     # Web component setup
-│   │   ├── dom.js               # DOM manipulation
-│   │   ├── store.js             # State management
-│   │   └── targeting.js         # Component targeting logic
-│   └── variants/                # Component variants
-│       └── {variant_name}/           # Experiment variation root folder
-│           ├── controllers/     # Svelte components should be created in this folder
-│           ├── App.svelte       # Main component
-│           ├── config.js        # Variant configuration
-│           ├── global.css       # Global styles
-│           ├── main.js          # Entry point
-│           └── webcomponent.js  # Web component registration
-├── rollup.config.js             # Build configuration
-├── rollup.script.js             # Build utilities
-├── package.json                 # Dependencies
-└── tampermonkey.config          # Development testing
+## Project Architecture
+```tree
+${cwd}/
+└── src/
+    ├── utils/                 # Core utilities
+    │   ├── classwatcher.js    # DOM class change observer
+    │   ├── customElement.js   # Web component base class
+    │   └── [other utilities...]
+    └── variants/
+        └── {variant_name}/    # Component variation
+            ├── controllers/   # Svelte logic controllers
+            ├── components/    # Presentational components
+            ├── App.svelte     # Root component
+            ├── config.js      # Variant configuration
+            └── [other files...]
 ```
 
-## Project Overview
-This is a Svelte-based web component system supporting multiple variants with a Rollup build pipeline.
-The project has two main sections:
+## System Constraints
+<system_constraints>
+1. **Environment**: WebContainer-based Node.js runtime
+2. **Dependencies**:
+   - Svelte 3+ for component architecture
+   - Rollup for bundling
+   - Shadow DOM mandatory for component isolation
+3. **File Structure**:
+   - All variants must reside in `src/variants/`
+   - Shared utilities must remain in `src/utils/`
+4. **Code Standards**:
+   - Strict separation between controllers and components
+   - Config-driven component registration
+   - State management through Svelte stores
+</system_constraints>
 
-### Core Utilities (src/utils/):
-src/utils/classwatcher.js: Monitors DOM element class changes
-src/utils/common.js: Generic helper functions
-src/utils/cookies.js: Cookie operations
-src/utils/customElement.js: Custom web component implementation
-src/utils/dom.js: DOM manipulation utilities
-src/utils/store.js: State management system
+## Component Development Protocol
 
-
-#### Variants Folders (src/variants/*):
-Each variant folder {variant_name} (e.g., variant_1/) contains full set of functionality to 
-implement the UI and logic using Svelte components and wrap it with Webcomponent wrapper and render it on the page:
-
-src/variants/{variant_name}/controllers/: Svelte controllers implementations can be used to wrap logically various components and functions of the UI 
-src/variants/{variant_name}/components/: Svelte components implementations
-src/variants/{variant_name}/App.svelte: Root component that manages views
-
-src/variants/{variant_name}/config.js: Component configuration and targeting rules, 
-src/variants/{variant_name}/global.css: Global styles that are axposed to parent document
-src/variants/{variant_name}/main.js: the entrypoint to render Svelte App inside Shadow DOM of Webcomponent 
-src/variants/{variant_name}/webcomponent.js: Web component registration and attacing to the DOM script (this is the file from which the result bundle is generated)
-
-### Supporting files:
-rollup.config.js: Build system settings
-rollup.script.js: Build helper functions
-package.json: Project dependencies
-tampermonkey.config: Development environment setup
-
-
-## Core Concepts
-1. Component Registration: Components are registered via `customElements.define()` with a configuration-driven approach
-2. Variants: Each variant lives in `src/variants/{variant_name}` with its own bundle
-3. State Management: Uses Svelte stores with global state sync
-4. Shadow DOM: Components are isolated using Shadow DOM with styles/scripts injection
-
-## Adding New Features
-
-### New WebComponent configuration
+### Core Implementation Flow
+1. **Configuration**:
 ```javascript
-// 1. Add component config in src/variants/{variant_name}/config.js
-export let config = {
-    components: {
-        "new-component": { /* id of the component used as "id" attribute when component is attached */ 
-            initialised: false, /* when Svelte app inside webcomponent is initialised changes to true */ 
-            where: "beforebegin", /* the rule of how to insertAdjacentHTML to target element */
-            view: "newview", /* name of the view which is used to switch different views inside App.svelte */
-            target: () => document.querySelector(".target"), /* DOM element to be used on Webcomponent connect */
-            condition: () => true /* function that can be used to check different targeting conditions (e.g domain name, user login status)*/
-        }
+// src/variants/{variant_name}/config.js
+export const config = {
+  components: {
+    "component-id": {
+      view: "view-name",
+      target: () => document.querySelector(".selector"),
+      condition: () => true
     }
+  }
 }
+```
 
-// 2. Create Svelte component
-// populate functionality
-// src/variants/{variant_name}/components/NewComponent.svelte
-<script>
-    export let name = "";
-</script>
-<div class="component">{name}</div>
+2. **Component Creation**:
+- `.svelte` files in `components/` for UI
+- Controllers in `controllers/` for business logic
 
-// 3. Create Svelte controller to use components
-// populate functionality
-// src/variants/{variant_name}/controllers/NewController.svelte
-<script>
-    import NewComponent from "../components/NewComponent.svelte";
-    export let name = "";
-</script>
-<div class="controller"><NewComponent name="{name}"/></div>
-
-// 3. Update App.svelte to include new view
-{#if view==="newview"}
-    <NewController name="{view}"/>
+3. **View Integration**:
+```svelte
+<!-- App.svelte -->
+{#if view === 'new-view'}
+  <NewController {props}/>
 {/if}
 ```
 
-### New Functionality
-1. Utilities: Can be added to `src/utils/`
-2. Stores: Extend `src/utils/store.js` to populate Svelte store to be used in svelte app
-3. Configuration: Update `src/variants/{variant_name}/config.js`
-
-### Build Process
+## Build & Deployment
+<build_instructions>
 1. Development: `npm run dev`
 2. Production: `npm run build`
-3. Local testing: Enable via TamperMonkey script
+3. Testing: Use Tampermonkey config
+4. Always rebuild after config changes
+</build_instructions>
 
-### Best Practices
-1. Always use Shadow DOM for component isolation, 
-2. Always use .svelte files for the UI and app functionality
-2. Follow the existing project structure pattern
-3. Keep variant-specific code in variant directories
-4. Use the targeting system for component insertion
-5. Leverage the ClassWatcher and for DOM updates
-6. Always for existing files modify only sections in between <MOD id="{modification id}"></MOD>
+## Modification Standards
+<code_modification_rules>
+1. Use <MOD id="unique-id"> wrappers for changes
+2. Preserve existing file structure
+3. Follow Svelte component conventions
+4. Update config.js before implementation
+5. Verify Shadow DOM compatibility
+</code_modification_rules>
+
+## Critical Implementation Rules
+1. **Component Isolation**:
+   - Mandatory Shadow DOM usage
+   - No global style leakage
+   - Component-specific stores
+
+2. **Structure Compliance**:
+   - Controllers → Business logic
+   - Components → Pure presentation
+   - Utilities → Shared functions
+
+3. **State Management**:
+   - Use store.js for cross-component state
+   - Isolate variant-specific state
+   - Implement state versioning
+
+## Example Artifact Flow
+<boltArtifact id="new-variant" title="New Component Variant">
+  <boltAction type="file" filePath="src/variants/new_variant/config.js">
+    // Component configuration
+    export const config = {
+      components: {
+        "new-component": {
+          view: "new-view",
+          target: () => document.querySelector("#target"),
+          condition: () => location.host === 'example.com'
+        }
+      }
+    }
+  </boltAction>
+
+  <boltAction type="file" filePath="src/variants/new_variant/components/NewComponent.svelte">
+    <script>
+      export let data;
+    </script>
+    
+    <div class="component">{data}</div>
+  </boltAction>
+
+  <boltAction type="shell">npm run build</boltAction>
+</boltArtifact>
+```
+
+## Validation Checklist
+1. Shadow DOM containment verified
+2. Config entries added for new components
+3. All file paths match project structure
+4. No global style declarations
+5. Stores properly namespaced
+6. Build completes without errors
+
+**Important**: Always test component insertion lifecycle:
+1. DOM target availability
+2. Condition evaluation
+3. View initialization
+4. State synchronization
+```
+
+Key improvements made:
+1. Added clear constraint categories
+2. Structured modification protocols
+3. Explicit validation checklist
+4. Visual code block separation
+5. Simplified directory structure presentation
+6. Component lifecycle emphasis
+7. Clear artifact flow example
+8. State management guidelines
+9. Build process isolation
+
+The prompt now better guides LLM responses while maintaining project-specific requirements through:
+- Structured constraint sections
+- Visual code examples
+- Clear modification boundaries
+- Explicit validation criteria
+- Component development workflow
+- Artifact generation templates
