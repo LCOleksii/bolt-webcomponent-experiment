@@ -1,11 +1,10 @@
 /*<MOD id="imports"> add other imports that can can be used in "MOD#components" block */
 /*</MOD>*/
-
+/*<DO_NOT_MODIFY>*/
 export const GLOBAL = "$__" + "_CNAME_" + "__";
-
 export const MAX_TRIES = 10;
-
 export const DISCONNECT_DELAY_MS = 10;
+/*</DO_NOT_MODIFY>*/
 
 export let config = {
     observedProps: ['id', 'view', 'debug'],
@@ -26,9 +25,10 @@ export let config = {
 
     }
 }
-
+/*<DO_NOT_MODIFY>*/
 export function getGLobal(){
     return window[GLOBAL]
 }
 
 window[GLOBAL] = window[GLOBAL] || config;
+/*</DO_NOT_MODIFY>*/
