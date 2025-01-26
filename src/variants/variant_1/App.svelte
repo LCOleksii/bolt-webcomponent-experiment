@@ -1,12 +1,13 @@
+<!-- <MOD id="App"> the application root element -->
 <script>
-    import POCController from "./controllers/POCController.svelte";
+    import ExampleController from "./controllers/ExampleController.svelte";
     export let id;
     export let view;
     export let debug = false;
 </script>
 <div class={debug?"component debug":"status"} data-id="{id}">
-    {#if view==="poc"}
-        <POCController name="{view}" debug="{debug}"/>
+    {#if view==="example"}
+        <ExampleController name="{view}" debug="{debug}"/>
     {/if}
 </div>
 <style>
@@ -21,3 +22,4 @@
         border: green;
     }
 </style>
+<!-- <MOD id="App"> -->

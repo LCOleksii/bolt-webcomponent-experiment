@@ -8,6 +8,7 @@ export const EVENTS = "eventsStore";
 // local component store
 let stores = {};
 let global = getGLobal();
+
 // shared filter
 global[STORE] = global[STORE] || {};
 

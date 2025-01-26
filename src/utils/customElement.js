@@ -3,9 +3,6 @@ import {wait} from './common';
 const COMPONENT = "_CNAME_";
 const isDebug = /lc-dev=1/i.test(document.cookie);
 
-import {conditionsReady} from './targeting';
-
-
 export function getCustomElement(opts){
     let styles = opts.styles;
     let script = opts.script;
@@ -116,6 +113,20 @@ export function connect(config, id) {
         return
     }
 }
+
+function conditionsReady(config, componentId){
+    return checkCondition(config, componentId, "target") && checkCondition(config, componentId, "condition");
+}
+
+function checkCondition(config, componentId, condition){
+    let settings = config.components[componentId];
+    if(!settings){
+        return false
+    }
+    let conditionResult = settings[condition]()
+    return conditionResult;
+}
+
 
 export function connectAll(config){
     Object.keys(config.components).forEach((k) => {
